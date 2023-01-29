@@ -1,5 +1,5 @@
 import EditProduct from "@/components/edit";
-import { useState } from "react";
+import { use, useState } from "react";
 
 const ProductList = (props) => {
   const [products, setProducts] = useState([
@@ -45,26 +45,48 @@ const ProductList = (props) => {
     },
   ])
 
-  const [isEdit, setIsEdit] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState([])
+
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleDelete = (id) => {
     console.log("delete", id)
     let newData = products.filter(x => x.id != id)
     setProducts(newData)
   }
+
+  const handleEdit = (data) => {
+    console.log(data)
+    let newData = products.map(x => {
+      if (data.id == x.id) {
+        x.title = data.title
+        x.description = data.description
+        x.purchasePrice = data.purchasePrice
+        x.sellPrice = data.purchasePrice
+        x.image = data.image
+      }
+      return x
+    })
+    setProducts(newData)
+    setIsEdit(false)
+  }
+
   return (
     <>
       <div className="product-list-container">
         {products.map((product, index) => (
           <div className="product-card" key={index}>
-            <img src={product.image} alt={product.title} />
+            <img src={product.image} alt={product.title} style={{ height: '230px', width: '230px', objectFit: 'cover' }} />
             <h2>{product.title}</h2>
             <p>{product.description}</p>
             <br />
             <p>Purchase Price: {product.purchasePrice}</p>
             <p>Sell Price: {product.sellPrice}</p>
             <div className="product-actions">
-              <button onClick={() => setIsEdit(true)}>Edit</button>
+              <button onClick={() => {
+                setSelectedProduct(product)
+                setIsEdit(true)
+              }}>Edit</button>
               <button onClick={() => handleDelete(`${product.id}`)}>
                 Delete
               </button>
@@ -73,7 +95,7 @@ const ProductList = (props) => {
         ))}
       </div>
 
-      {isEdit && <EditProduct product={products} onClose={() => setIsEdit(false)} />}
+      {isEdit && <EditProduct product={selectedProduct} handleEdit={handleEdit} onClose={() => setIsEdit(false)} />}
     </>
   );
 };

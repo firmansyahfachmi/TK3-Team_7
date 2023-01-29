@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const EditProduct = (props) => {
   const [title, setTitle] = useState(props.product.title);
@@ -7,17 +7,20 @@ const EditProduct = (props) => {
     props.product.purchasePrice
   );
   const [sellPrice, setSellPrice] = useState(props.product.sellPrice);
-  const [image, setImage] = useState(props.product.image);
+  const [image, setImage] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Updating product:", {
-      title,
-      description,
-      purchasePrice,
-      sellPrice,
-      image,
-    });
+    const data = {
+      id: props.product.id,
+      title: title,
+      description: description,
+      purchasePrice: purchasePrice,
+      sellPrice: sellPrice,
+      image: image
+    }
+    props.handleEdit(data)
+
     // Update the product in the backend here
   };
 
@@ -25,12 +28,12 @@ const EditProduct = (props) => {
     <div className="wrapper-edit-product">
       <form className="edit-product-form" onSubmit={handleSubmit}>
         <div className="close-btn" onClick={props.onClose}>&times;</div>
-        
+
         <label>
           Title:
           <input
             type="text"
-            value={title}
+            defaultValue={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </label>
@@ -38,7 +41,7 @@ const EditProduct = (props) => {
         <label>
           Description:
           <textarea
-            value={description}
+            defaultValue={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </label>
@@ -47,7 +50,7 @@ const EditProduct = (props) => {
           Purchase Price:
           <input
             type="number"
-            value={purchasePrice}
+            defaultValue={purchasePrice}
             onChange={(e) => setPurchasePrice(e.target.value)}
           />
         </label>
@@ -56,7 +59,7 @@ const EditProduct = (props) => {
           Sell Price:
           <input
             type="number"
-            value={sellPrice}
+            defaultValue={sellPrice}
             onChange={(e) => setSellPrice(e.target.value)}
           />
         </label>
@@ -64,9 +67,10 @@ const EditProduct = (props) => {
         <label>
           Image:
           <input
-            type="text"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
+            type="file"
+            defaultValue={image}
+            accept=".jpg, .jpeg, .png, .svg"
+            onChange={(e) => setImage(URL.createObjectURL(e.target.files[0]))}
           />
         </label>
         <br />
